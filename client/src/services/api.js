@@ -41,10 +41,13 @@ api.interceptors.response.use(
 // Post API services
 export const postService = {
   // Get all posts with optional pagination and filters
-  getAllPosts: async (page = 1, limit = 10, category = null) => {
+  getAllPosts: async (page = 1, limit = 10, category = null, search = null) => {
     let url = `/posts?page=${page}&limit=${limit}`;
     if (category) {
       url += `&category=${category}`;
+    }
+    if (search) {
+      url += `&search=${encodeURIComponent(search)}`;
     }
     const response = await api.get(url);
     return response.data;
@@ -83,6 +86,18 @@ export const postService = {
   // Search posts
   searchPosts: async (query) => {
     const response = await api.get(`/posts/search?q=${query}`);
+    return response.data;
+  },
+
+  // Upload image
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await api.post('/posts/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 };
